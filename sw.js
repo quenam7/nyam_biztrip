@@ -1,4 +1,4 @@
-const CACHE = "business-trip-english-v1";
+const CACHE = "business-trip-english-v2";
 const APP_SHELL = [
   "./",
   "./index.html",
