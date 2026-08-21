@@ -1,0 +1,768 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7f7f5">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Business Trip English Flashcards</title>
+<style>
+:root{
+  --bg:#f7f7f5;
+  --card:#ffffff;
+  --text:#171717;
+  --muted:#6c6c6c;
+  --line:#e5e3df;
+  --soft:#efeeea;
+  --accent:#1f2937;
+  --shadow:0 8px 24px rgba(0,0,0,.055);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR",Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+}
+button{font:inherit}
+.wrap{max-width:760px;margin:0 auto;padding:18px 16px 80px}
+header{padding:8px 2px 18px}
+.kicker{
+  font-size:12px;color:var(--muted);letter-spacing:.08em;
+  text-transform:uppercase;font-weight:800
+}
+h1{font-size:28px;line-height:1.18;margin:7px 0 7px;letter-spacing:-.03em}
+.subtitle{font-size:14px;line-height:1.55;color:var(--muted);margin:0}
+
+.category-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:11px;
+  margin-top:10px;
+}
+.category-card{
+  border:1px solid var(--line);
+  background:var(--card);
+  border-radius:18px;
+  padding:18px 14px;
+  min-height:120px;
+  text-align:left;
+  box-shadow:var(--shadow);
+  cursor:pointer;
+}
+.category-card:active{transform:scale(.99)}
+.category-icon{font-size:28px;margin-bottom:16px}
+.category-title{font-size:16px;font-weight:800;line-height:1.3;letter-spacing:-.02em}
+.category-count{font-size:12px;color:var(--muted);margin-top:5px}
+
+.study-top{
+  position:sticky;
+  top:0;
+  z-index:20;
+  margin:0 -16px 16px;
+  padding:10px 16px 12px;
+  background:rgba(247,247,245,.95);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.top-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:10px;
+}
+.back-btn{
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--text);
+  border-radius:12px;
+  padding:9px 11px;
+  font-weight:800;
+  cursor:pointer;
+}
+.study-title{
+  font-size:17px;
+  font-weight:850;
+  letter-spacing:-.02em;
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.front-option{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:10px 12px;
+}
+.option-label{
+  font-size:13px;
+  color:var(--muted);
+  font-weight:750;
+  white-space:nowrap;
+}
+.segment{
+  display:flex;
+  background:var(--soft);
+  padding:3px;
+  border-radius:10px;
+  gap:2px;
+}
+.segment button{
+  border:0;
+  background:transparent;
+  padding:7px 12px;
+  border-radius:8px;
+  font-size:13px;
+  color:var(--muted);
+  font-weight:800;
+  cursor:pointer;
+}
+.segment button.active{
+  background:var(--card);
+  color:var(--text);
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
+}
+
+.progress{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  color:var(--muted);
+  font-size:12px;
+  margin:3px 2px 10px;
+}
+.flashcard{
+  perspective:1200px;
+  width:100%;
+  min-height:360px;
+  cursor:pointer;
+  user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+.card-inner{
+  position:relative;
+  width:100%;
+  min-height:360px;
+  transition:transform .42s ease;
+  transform-style:preserve-3d;
+}
+.flashcard.flipped .card-inner{transform:rotateY(180deg)}
+.card-face{
+  position:absolute;
+  inset:0;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:22px;
+  box-shadow:var(--shadow);
+  padding:26px 22px 22px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+}
+.card-back{transform:rotateY(180deg)}
+.situation{
+  position:absolute;
+  top:18px;
+  left:20px;
+  right:20px;
+  font-size:12px;
+  color:var(--muted);
+  font-weight:800;
+}
+.main-text{
+  font-size:28px;
+  line-height:1.42;
+  font-weight:850;
+  letter-spacing:-.025em;
+  max-width:640px;
+}
+.main-text.english{font-size:26px}
+.note{
+  margin-top:18px;
+  font-size:14px;
+  line-height:1.6;
+  color:var(--muted);
+  max-width:580px;
+}
+.hint{
+  position:absolute;
+  bottom:17px;
+  font-size:12px;
+  color:var(--muted);
+}
+.speak-btn{
+  position:absolute;
+  top:16px;
+  right:16px;
+  width:42px;
+  height:42px;
+  border:1px solid var(--line);
+  background:var(--soft);
+  color:var(--text);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:19px;
+  cursor:pointer;
+  z-index:3;
+}
+.speak-btn:active{transform:scale(.96)}
+
+.controls{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:14px;
+}
+.nav-btn{
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--text);
+  border-radius:14px;
+  padding:13px 14px;
+  font-weight:800;
+  cursor:pointer;
+}
+.nav-btn:disabled{opacity:.35}
+.shuffle-row{
+  display:flex;
+  justify-content:center;
+  margin-top:10px;
+}
+.shuffle-btn{
+  border:0;
+  background:transparent;
+  color:var(--muted);
+  font-size:13px;
+  font-weight:750;
+  padding:10px;
+  cursor:pointer;
+}
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:26px;
+  transform:translateX(-50%) translateY(20px);
+  opacity:0;
+  background:#111;
+  color:#fff;
+  padding:9px 12px;
+  border-radius:999px;
+  font-size:12px;
+  pointer-events:none;
+  transition:.2s ease;
+  z-index:99;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.hidden{display:none!important}
+
+
+.home-actions{
+  margin-top:18px;
+  display:grid;
+  gap:10px;
+}
+.important-home-btn{
+  width:100%;
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--text);
+  border-radius:16px;
+  padding:15px 16px;
+  font-weight:850;
+  cursor:pointer;
+  text-align:left;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  box-shadow:var(--shadow);
+}
+.important-home-btn .left{
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+.important-home-btn .count-badge{
+  min-width:26px;
+  height:26px;
+  padding:0 8px;
+  border-radius:999px;
+  background:var(--soft);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+  color:var(--muted);
+}
+.reset-wrap{
+  margin-top:42px;
+  padding-top:18px;
+  border-top:1px solid var(--line);
+}
+.reset-btn{
+  width:100%;
+  border:1px solid var(--line);
+  background:transparent;
+  color:var(--muted);
+  border-radius:14px;
+  padding:13px 14px;
+  font-size:13px;
+  font-weight:750;
+  cursor:pointer;
+}
+.important-card-btn{
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--muted);
+  border-radius:999px;
+  padding:7px 10px;
+  font-size:12px;
+  font-weight:850;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.important-card-btn.active{
+  background:#fff3bf;
+  color:#6b4f00;
+  border-color:#ead478;
+}
+.important-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  margin-left:6px;
+  padding:3px 7px;
+  border-radius:999px;
+  background:#fff3bf;
+  color:#6b4f00;
+  font-size:10px;
+  font-weight:850;
+  vertical-align:1px;
+}
+.study-meta-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:3px 2px 10px;
+}
+.study-meta-row .progress{
+  margin:0;
+  flex:1;
+}
+
+@media(min-width:620px){
+  .category-grid{grid-template-columns:repeat(3,1fr)}
+  .flashcard,.card-inner{min-height:410px}
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#111;
+    --card:#191919;
+    --text:#f3f3f3;
+    --muted:#a4a4a4;
+    --line:#2e2e2e;
+    --soft:#242424;
+    --accent:#e9e9e9;
+    --shadow:none;
+  }
+  .study-top{background:rgba(17,17,17,.94)}
+  .toast{background:#f2f2f2;color:#111}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <section id="homeView">
+    <header>
+      <div class="kicker">Business Trip English Reminder</div>
+      <h1>상황별 영어</h1>
+      <p class="subtitle">카테고리를 선택해 플래시카드로 빠르게 복습합니다.</p>
+    </header>
+    <div class="category-grid" id="categoryGrid"></div>
+
+    <div class="home-actions">
+      <button class="important-home-btn" id="importantHomeBtn" type="button">
+        <span class="left"><span>★</span><span>중요체크</span></span>
+        <span class="count-badge" id="importantCount">0</span>
+      </button>
+    </div>
+
+    <div class="reset-wrap">
+      <button class="reset-btn" id="resetBtn" type="button">초기화</button>
+    </div>
+  </section>
+
+  <section id="studyView" class="hidden">
+    <div class="study-top">
+      <div class="top-row">
+        <button class="back-btn" id="backHome">←</button>
+        <div class="study-title" id="studyTitle"></div>
+      </div>
+      <div class="front-option">
+        <div class="option-label">앞면 선택 옵션</div>
+        <div class="segment">
+          <button id="frontKo" class="active" type="button">한국어</button>
+          <button id="frontEn" type="button">영어</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="study-meta-row">
+      <div class="progress">
+        <span id="progressText"></span>
+        <span>카드를 눌러 뒤집기</span>
+      </div>
+      <button class="important-card-btn" id="importantCardBtn" type="button">☆ 중요체크</button>
+    </div>
+
+    <div class="flashcard" id="flashcard" tabindex="0" role="button" aria-label="플래시카드 뒤집기">
+      <div class="card-inner">
+        <div class="card-face card-front" id="frontFace"></div>
+        <div class="card-face card-back" id="backFace"></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="nav-btn" id="prevBtn">← 이전</button>
+      <button class="nav-btn" id="nextBtn">다음 →</button>
+    </div>
+    <div class="shuffle-row">
+      <button class="shuffle-btn" id="shuffleBtn">순서 섞기</button>
+    </div>
+  </section>
+
+</div>
+
+<div class="toast" id="toast">음성 재생을 사용할 수 없습니다.</div>
+
+<script>
+const DATA = [{"id": "airport", "icon": "✈️", "title": "공항·비행기", "items": [["좌석 요청", "Could I have an aisle seat, if possible?", "가능하면 통로석 부탁드립니다."], ["수하물 확인", "Is my bag checked through to the final destination?", "수하물이 최종 목적지까지 바로 연결되는지 확인할 때."], ["탑승구 확인", "Has the gate changed?", "탑승구가 바뀌었는지 간단히 확인."], ["연결편 문의", "How much time do I have for the connection?", "환승 시간이 얼마나 되는지 물을 때."], ["짐 선반 부탁", "Could you help me put this in the overhead bin?", "기내 선반에 짐을 올리는 도움을 요청."], ["입국 목적", "I’m here on a business trip.", "출장 목적으로 입국했다고 간결하게 답변."]]}, {"id": "hotel", "icon": "🏨", "title": "호텔", "items": [["체크인", "I have a reservation under Kim.", "Kim 이름으로 예약했습니다."], ["조식 확인", "Is breakfast included?", "조식 포함 여부 확인."], ["늦은 체크아웃", "Would it be possible to get a late checkout?", "레이트 체크아웃이 가능한지 정중하게 문의."], ["영수증 요청", "Could I get an itemized receipt, please?", "항목별 영수증을 요청할 때."], ["예약 문제", "There seems to be an issue with my reservation.", "예약에 문제가 있는 것 같습니다."], ["짐 보관", "Could you hold my luggage after checkout?", "체크아웃 후 짐 보관을 부탁할 때."]]}, {"id": "transport", "icon": "🚕", "title": "이동", "items": [["목적지 설명", "Could you take me to this address, please?", "주소를 보여주며 목적지를 말할 때."], ["정문 하차", "Could you drop me off at the main entrance?", "정문에서 내려주세요."], ["소요시간", "How long does it usually take from here?", "현재 위치에서 보통 얼마나 걸리는지 질문."], ["교통 상황", "Is traffic usually this heavy at this time?", "이 시간대 교통량이 원래 많은지 물을 때."], ["영수증 요청", "Could I have a receipt, please?", "택시·차량 이용 후 영수증 요청."], ["잠시 대기", "Could you wait here for a few minutes?", "기사에게 잠시 기다려 달라고 요청."]]}, {"id": "smalltalk", "icon": "👋", "title": "첫 인사·스몰토크", "items": [["첫 만남", "It’s great to finally meet you in person.", "온라인 등으로 알던 사람을 처음 대면할 때."], ["재회", "It’s good to see you again.", "다시 만난 상대에게 가장 무난한 인사."], ["출장 질문", "How has your trip been so far?", "상대방 출장이나 이동 상황을 가볍게 질문."], ["현지 질문", "Have you been based here long?", "현지 근무 기간을 자연스럽게 물을 때."], ["일정 질문", "Do you have a busy schedule while you’re here?", "출장 일정이 바쁜지 가벼운 대화."], ["대화 전환", "Anyway, shall we head in?", "스몰토크를 마치고 다음 일정으로 자연스럽게 전환."]]}, {"id": "meeting", "icon": "🗂️", "title": "회의 진행", "items": [["회의 시작", "Shall we get started?", "시작하시죠."], ["일정 확인", "Are we still on for 10 tomorrow?", "내일 10시 일정 그대로죠?"], ["목적 제시", "The main thing I’d like to discuss today is…", "오늘 가장 중점적으로 논의하고 싶은 사항을 제시."], ["안건 전환", "Shall we move on to the next item?", "다음 안건으로 넘어갈 때."], ["시간 확인", "We have about twenty minutes left.", "남은 회의 시간을 환기."], ["회의 정리", "So, just to recap…", "정리하면."]]}, {"id": "opinions", "icon": "💬", "title": "의견·질문·반대", "items": [["의견 요청", "What’s your take on this?", "이 부분 어떻게 보세요?"], ["다시 듣기", "Sorry, I didn’t quite catch that.", "잘 못 들었을 때 자연스럽게 다시 말해 달라는 표현."], ["생각할 시간", "Let me think about that for a second.", "잠깐 생각해볼게요."], ["완곡한 반대", "I see your point, but I’m not sure I agree.", "이해하지만 동의하기는 어렵습니다."], ["조건부 동의", "That could work, provided that…", "~라는 조건이면 가능합니다."], ["추가 설명 요청", "Could you walk me through that in a little more detail?", "조금 더 상세한 설명을 요청할 때."]]}, {"id": "numbers", "icon": "🔎", "title": "숫자·가격·일정 확인", "items": [["상호 이해 확인", "Just to make sure we’re on the same page…", "서로 이해가 같은지 확인."], ["숫자 재확인", "Just to confirm, did you say fifteen or fifty?", "15와 50처럼 헷갈리는 숫자를 재확인."], ["가격 포함 범위", "Does that price include everything?", "제시 가격에 모든 비용이 포함되는지 질문."], ["마감일 확인", "What’s the deadline on your side?", "상대 측 마감일 확인."], ["일정 제안", "Would Thursday afternoon work for you?", "구체적인 일정 제안."], ["변경 가능성", "Is there any flexibility on the timing?", "일정 조정 여지가 있는지 질문."]]}, {"id": "dining", "icon": "🍽️", "title": "식사·접대", "items": [["메뉴 추천", "I’m happy to go with whatever you recommend.", "추천하시는 걸로 하겠습니다."], ["알레르기 확인", "Does this contain any nuts?", "견과류 등 특정 성분 포함 여부 확인."], ["양 조절", "Could we share a few dishes?", "여러 요리를 함께 나눠 먹자고 할 때."], ["추가 주문", "Could we get one more of these?", "같은 메뉴를 하나 더 주문."], ["계산 요청", "Could we have the bill, please?", "계산서를 요청."], ["감사 표현", "Thanks for arranging dinner.", "식사 자리를 마련한 상대에게 자연스럽게 감사."]]}, {"id": "problems", "icon": "⚠️", "title": "돌발상황", "items": [["지연 안내", "I’m running about ten minutes late.", "약 10분 늦는다고 알릴 때."], ["주소 확인", "I think I may have the wrong address.", "주소가 잘못된 것 같다고 말할 때."], ["분실 문의", "I think I left my phone in the taxi.", "택시에 휴대폰 등을 두고 내렸다고 설명."], ["결제 문제", "My card doesn’t seem to be going through.", "카드 결제가 정상적으로 처리되지 않을 때."], ["도움 요청", "Could you help me sort this out?", "문제를 함께 해결해 달라고 요청."], ["대안 요청", "What would be the best alternative?", "현재 방법이 안 될 때 가장 좋은 대안을 질문."]]}, {"id": "followup", "icon": "✅", "title": "작별·후속 연락", "items": [["후속조치", "I’ll follow up with you on that.", "그 건은 제가 후속 연락드리겠습니다."], ["자료 전달", "I’ll send that over once I’m back at the hotel.", "호텔에 돌아가면 자료를 보내겠다고 할 때."], ["다음 단계", "Let’s stay in touch on the next steps.", "다음 단계에 대해 계속 연락하자는 표현."], ["만남 감사", "Thanks again for taking the time to meet with me.", "시간을 내어 만난 것에 정중하게 감사."], ["다음 만남", "Hopefully we can catch up again soon.", "가까운 시일 내 다시 보자는 자연스러운 작별."], ["안전한 귀가", "Have a safe trip back.", "출장·귀국길을 앞둔 상대에게."]]}];
+
+const homeView = document.getElementById("homeView");
+const studyView = document.getElementById("studyView");
+const categoryGrid = document.getElementById("categoryGrid");
+const studyTitle = document.getElementById("studyTitle");
+const flashcard = document.getElementById("flashcard");
+const frontFace = document.getElementById("frontFace");
+const backFace = document.getElementById("backFace");
+const progressText = document.getElementById("progressText");
+const frontKo = document.getElementById("frontKo");
+const frontEn = document.getElementById("frontEn");
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
+const backHome = document.getElementById("backHome");
+const shuffleBtn = document.getElementById("shuffleBtn");
+const toast = document.getElementById("toast");
+const importantHomeBtn = document.getElementById("importantHomeBtn");
+const importantCount = document.getElementById("importantCount");
+const resetBtn = document.getElementById("resetBtn");
+const importantCardBtn = document.getElementById("importantCardBtn");
+
+let currentCategory = null;
+let currentItems = [];
+let currentIndex = 0;
+let currentMode = "category";
+let frontLanguage = localStorage.getItem("tripEnglishFrontLanguage") || "ko";
+let importantKeys = new Set(JSON.parse(localStorage.getItem("tripEnglishImportant") || "[]"));
+
+function esc(s){
+  return s.replace(/[&<>"']/g, m => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[m]));
+}
+
+function cardKey(english){
+  return english;
+}
+
+function saveImportant(){
+  localStorage.setItem("tripEnglishImportant", JSON.stringify([...importantKeys]));
+  updateImportantHome();
+}
+
+function updateImportantHome(){
+  importantCount.textContent = importantKeys.size;
+  importantHomeBtn.disabled = importantKeys.size === 0;
+  importantHomeBtn.style.opacity = importantKeys.size === 0 ? ".55" : "1";
+}
+
+function updateFrontLanguageButtons(){
+  frontKo.classList.toggle("active", frontLanguage === "ko");
+  frontEn.classList.toggle("active", frontLanguage === "en");
+}
+
+function getImportantItems(){
+  const items = [];
+  DATA.forEach(cat=>{
+    cat.items.forEach(item=>{
+      if(importantKeys.has(cardKey(item[1]))){
+        items.push([item[0], item[1], item[2], cat.title, cat.icon]);
+      }
+    });
+  });
+  return items;
+}
+
+function renderCategories(){
+  categoryGrid.innerHTML = DATA.map(cat => `
+    <button class="category-card" data-id="${cat.id}">
+      <div class="category-icon">${cat.icon}</div>
+      <div class="category-title">${esc(cat.title)}</div>
+      <div class="category-count">${cat.items.length}개 표현</div>
+    </button>
+  `).join("");
+
+  categoryGrid.querySelectorAll(".category-card").forEach(btn=>{
+    btn.addEventListener("click", ()=>openCategory(btn.dataset.id));
+  });
+}
+
+function openCategory(id){
+  currentMode = "category";
+  currentCategory = DATA.find(c => c.id === id);
+  currentItems = [...currentCategory.items];
+  currentIndex = 0;
+  flashcard.classList.remove("flipped");
+  studyTitle.textContent = `${currentCategory.icon} ${currentCategory.title}`;
+  homeView.classList.add("hidden");
+  studyView.classList.remove("hidden");
+  renderCard();
+  window.scrollTo(0,0);
+}
+
+function openImportant(){
+  const items = getImportantItems();
+  if(!items.length){
+    showToast("중요체크한 카드가 없습니다.");
+    return;
+  }
+  currentMode = "important";
+  currentCategory = null;
+  currentItems = items;
+  currentIndex = 0;
+  flashcard.classList.remove("flipped");
+  studyTitle.textContent = `★ 중요체크`;
+  homeView.classList.add("hidden");
+  studyView.classList.remove("hidden");
+  renderCard();
+  window.scrollTo(0,0);
+}
+
+function renderCard(){
+  if(!currentItems.length){
+    studyView.classList.add("hidden");
+    homeView.classList.remove("hidden");
+    updateImportantHome();
+    return;
+  }
+
+  const item = currentItems[currentIndex];
+  const situation = item[0];
+  const english = item[1];
+  const korean = item[2];
+  const sourceTitle = item[3] || "";
+  const sourceIcon = item[4] || "";
+  const key = cardKey(english);
+  const isImportant = importantKeys.has(key);
+
+  flashcard.classList.remove("flipped");
+
+  const badge = isImportant ? `<span class="important-badge">★ 중요</span>` : "";
+  const source = currentMode === "important" && sourceTitle
+    ? `${sourceIcon} ${esc(sourceTitle)} · ${esc(situation)}`
+    : esc(situation);
+
+  const koFace = `
+    <div class="situation">${source}${badge}</div>
+    <div class="main-text">${esc(korean)}</div>
+    <div class="hint">탭해서 영어 보기</div>
+  `;
+
+  const enFace = `
+    <div class="situation">${source}${badge}</div>
+    <button class="speak-btn" type="button" aria-label="영어 문장 듣기" data-speak="${esc(english)}">🔊</button>
+    <div class="main-text english">${esc(english)}</div>
+    <div class="note">${esc(korean)}</div>
+    <div class="hint">탭해서 한국어 보기</div>
+  `;
+
+  if(frontLanguage === "ko"){
+    frontFace.innerHTML = koFace;
+    backFace.innerHTML = enFace;
+  }else{
+    frontFace.innerHTML = enFace;
+    backFace.innerHTML = koFace;
+  }
+
+  progressText.textContent = `${currentIndex + 1} / ${currentItems.length}`;
+  prevBtn.disabled = currentIndex === 0;
+  nextBtn.disabled = currentIndex === currentItems.length - 1;
+
+  importantCardBtn.textContent = isImportant ? "★ 중요체크" : "☆ 중요체크";
+  importantCardBtn.classList.toggle("active", isImportant);
+  importantCardBtn.dataset.key = key;
+
+  bindSpeakButtons();
+}
+function bindSpeakButtons(){
+  document.querySelectorAll(".speak-btn").forEach(btn=>{
+    btn.addEventListener("click", e=>{
+      e.stopPropagation();
+      speakEnglish(btn.dataset.speak);
+    });
+  });
+}
+
+function showToast(msg){
+  toast.textContent = msg;
+  toast.classList.add("show");
+  setTimeout(()=>toast.classList.remove("show"), 1500);
+}
+
+function speakEnglish(text){
+  if(!("speechSynthesis" in window)){
+    showToast("이 기기에서는 음성 재생을 지원하지 않습니다.");
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "en-US";
+  u.rate = 0.92;
+  u.pitch = 1;
+
+  const voices = window.speechSynthesis.getVoices();
+  const preferred =
+    voices.find(v => v.lang === "en-US" && /Samantha|Alex|Google US English/i.test(v.name)) ||
+    voices.find(v => v.lang === "en-US") ||
+    voices.find(v => /^en/i.test(v.lang));
+
+  if(preferred) u.voice = preferred;
+  window.speechSynthesis.speak(u);
+}
+
+flashcard.addEventListener("click", ()=>{
+  flashcard.classList.toggle("flipped");
+});
+
+flashcard.addEventListener("keydown", e=>{
+  if(e.key === "Enter" || e.key === " "){
+    e.preventDefault();
+    flashcard.classList.toggle("flipped");
+  }
+});
+
+frontKo.addEventListener("click", ()=>{
+  frontLanguage = "ko";
+  localStorage.setItem("tripEnglishFrontLanguage", frontLanguage);
+  updateFrontLanguageButtons();
+  renderCard();
+});
+
+frontEn.addEventListener("click", ()=>{
+  frontLanguage = "en";
+  localStorage.setItem("tripEnglishFrontLanguage", frontLanguage);
+  updateFrontLanguageButtons();
+  renderCard();
+});
+
+prevBtn.addEventListener("click", ()=>{
+  if(currentIndex > 0){
+    currentIndex--;
+    renderCard();
+  }
+});
+
+nextBtn.addEventListener("click", ()=>{
+  if(currentIndex < currentItems.length - 1){
+    currentIndex++;
+    renderCard();
+  }
+});
+
+backHome.addEventListener("click", ()=>{
+  window.speechSynthesis?.cancel();
+  studyView.classList.add("hidden");
+  homeView.classList.remove("hidden");
+  window.scrollTo(0,0);
+});
+
+shuffleBtn.addEventListener("click", ()=>{
+  for(let i=currentItems.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [currentItems[i], currentItems[j]] = [currentItems[j], currentItems[i]];
+  }
+  currentIndex = 0;
+  renderCard();
+});
+
+
+importantHomeBtn.addEventListener("click", openImportant);
+
+importantCardBtn.addEventListener("click", ()=>{
+  const key = importantCardBtn.dataset.key;
+  if(!key) return;
+
+  if(importantKeys.has(key)){
+    importantKeys.delete(key);
+
+    if(currentMode === "important"){
+      currentItems.splice(currentIndex, 1);
+      if(currentIndex >= currentItems.length){
+        currentIndex = Math.max(0, currentItems.length - 1);
+      }
+    }
+  }else{
+    importantKeys.add(key);
+  }
+
+  saveImportant();
+  renderCard();
+});
+
+resetBtn.addEventListener("click", ()=>{
+  const ok = confirm("중요체크와 앞면 언어 설정을 모두 초기화할까요?");
+  if(!ok) return;
+
+  importantKeys.clear();
+  frontLanguage = "ko";
+  localStorage.removeItem("tripEnglishImportant");
+  localStorage.removeItem("tripEnglishFrontLanguage");
+  updateImportantHome();
+  updateFrontLanguageButtons();
+  showToast("초기화했습니다.");
+});
+
+if("speechSynthesis" in window){
+  window.speechSynthesis.getVoices();
+}
+
+updateFrontLanguageButtons();
+updateImportantHome();
+renderCategories();
+
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
